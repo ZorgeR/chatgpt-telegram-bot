@@ -21,13 +21,13 @@ class WorldTimeApiPlugin(Plugin):
     def get_spec(self) -> [Dict]:
         return [{
             "name": "worldtimeapi",
-            "description": f"Get the current time from a given timezone",
+            "description": "Get the current time from a given timezone",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "timezone": {
                         "type": "string",
-                        "description": f"The timezone identifier (e.g: `Europe/Rome`). Infer this from the location."
+                        "description": "The timezone identifier (e.g: `Europe/Rome`). Infer this from the location."
                                        f"Use {self.default_timezone} if not specified."
                     }
                 },
@@ -35,7 +35,7 @@ class WorldTimeApiPlugin(Plugin):
             },
         }]
 
-    async def execute(self, function_name, **kwargs) -> Dict:
+    async def execute(self, function_name, helper, **kwargs) -> Dict:
         timezone = kwargs.get('timezone', self.default_timezone)
         url = f'https://worldtimeapi.org/api/timezone/{timezone}'
 

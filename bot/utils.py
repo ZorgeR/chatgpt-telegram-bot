@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import itertools
 import json
 import logging
@@ -71,12 +70,12 @@ def is_group_chat(update: Update) -> bool:
     """
     Checks if the message was sent from a group chat
     """
-    return (
-        update.effective_chat.type
-        in [constants.ChatType.GROUP, constants.ChatType.SUPERGROUP]
-        if update.effective_chat
-        else False
-    )
+    if not update.effective_chat:
+        return False
+    return update.effective_chat.type in [
+        constants.ChatType.GROUP,
+        constants.ChatType.SUPERGROUP
+    ]
 
 
 def split_into_chunks(text: str, chunk_size: int = 4096) -> list[str]:
@@ -97,8 +96,10 @@ async def wrap_with_indicator(update: Update, context: CallbackContext, coroutin
             context.application.create_task(
                 update.effective_chat.send_action(chat_action, message_thread_id=get_thread_id(update))
             )
-        with contextlib.suppress(asyncio.TimeoutError):
+        try:
             await asyncio.wait_for(asyncio.shield(task), 4.5)
+        except asyncio.TimeoutError:
+            pass
 
 
 async def edit_message_with_retry(context: ContextTypes.DEFAULT_TYPE, chat_id: int | None,
@@ -116,7 +117,7 @@ async def edit_message_with_retry(context: ContextTypes.DEFAULT_TYPE, chat_id: i
     try:
         await context.bot.edit_message_text(
             chat_id=chat_id,
-            message_id=None if is_inline else int(message_id),
+            message_id=int(message_id) if not is_inline else None,
             inline_message_id=message_id if is_inline else None,
             text=text,
             parse_mode=constants.ParseMode.MARKDOWN if markdown else None,
@@ -127,7 +128,7 @@ async def edit_message_with_retry(context: ContextTypes.DEFAULT_TYPE, chat_id: i
         try:
             await context.bot.edit_message_text(
                 chat_id=chat_id,
-                message_id=None if is_inline else int(message_id),
+                message_id=int(message_id) if not is_inline else None,
                 inline_message_id=message_id if is_inline else None,
                 text=text,
             )
@@ -189,7 +190,10 @@ def is_admin(config, user_id: int, log_no_admin=False) -> bool:
     admin_user_ids = config['admin_user_ids'].split(',')
 
     # Check if user is in the admin user list
-    return str(user_id) in admin_user_ids
+    if str(user_id) in admin_user_ids:
+        return True
+
+    return False
 
 
 def get_user_budget(config, user_id) -> float | None:
@@ -295,6 +299,7 @@ def add_chat_request_to_usage_tracker(usage, config, user_id, used_tokens):
             usage["guests"].add_chat_tokens(used_tokens, config['token_price'])
     except Exception as e:
         logging.warning(f'Failed to add tokens to usage_logs: {str(e)}')
+        pass
 
 
 def get_reply_to_message_id(config, update: Update):
@@ -375,6 +380,11 @@ def cleanup_intermediate_files(response: any):
             os.remove(value)
 
 
+# Function to encode the image
 def encode_image(fileobj):
-    return base64.b64encode(fileobj.getvalue()).decode('utf-8')
+    image = base64.b64encode(fileobj.getvalue()).decode('utf-8')
+    return f'data:image/jpeg;base64,{image}'
 
+def decode_image(imgbase64):
+    image = imgbase64[len('data:image/jpeg;base64,'):]
+    return base64.b64decode(image)

@@ -56,24 +56,24 @@ def default_max_tokens(model: str) -> int:
         return 4096
 
 
-def max_model_tokens(self):
+def max_model_tokens(model: str) -> int:
     base = 4096
-    if self.config['model'] in GPT_3_MODELS:
+    if model in GPT_3_MODELS:
         return base
-    if self.config['model'] in GPT_3_16K_MODELS:
+    if model in GPT_3_16K_MODELS:
         return base * 4
-    if self.config['model'] in GPT_4_MODELS:
+    if model in GPT_4_MODELS:
         return base * 2
-    if self.config['model'] in GPT_4_32K_MODELS:
+    if model in GPT_4_32K_MODELS:
         return base * 8
-    if self.config['model'] in GPT_4_VISION_MODELS:
+    if model in GPT_4_VISION_MODELS:
         return base * 31
-    if self.config['model'] in GPT_4_128K_MODELS:
+    if model in GPT_4_128K_MODELS:
         return base * 31
-    if self.config['model'] in GPT_4O_MODELS:
+    if model in GPT_4O_MODELS:
         return base * 31
     raise NotImplementedError(
-        f"Max tokens for model {self.config['model']} is not implemented yet."
+        f"Max tokens for model {model} is not implemented yet."
     )
 
 
@@ -456,7 +456,7 @@ class OpenAIHelper:
 
             # Summarize the chat history if it's too long to avoid excessive token usage
             token_count = self.__count_tokens(self.conversations[chat_id])
-            exceeded_max_tokens = token_count + self.config['max_tokens'] > self.__max_model_tokens()
+            exceeded_max_tokens = token_count + self.config['max_tokens'] > max_model_tokens("gpt-4-vision-preview")
             exceeded_max_history_size = len(self.conversations[chat_id]) > self.config['max_history_size']
 
             if exceeded_max_tokens or exceeded_max_history_size:

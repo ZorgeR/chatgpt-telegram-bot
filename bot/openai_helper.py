@@ -22,7 +22,7 @@ from plugin_manager import PluginManager
 
 # Models can be found here: https://platform.openai.com/docs/models/overview
 GPT_4_VISION_MODELS = ("gpt-4-vision-preview",)
-GPT_4O_MODELS = ("gpt-4o", "gpt-4o-mini")
+GPT_4O_MODELS = ("gpt-4o", "gpt-4o-mini",)
 GPT_ALL_MODELS = GPT_4_VISION_MODELS + GPT_4O_MODELS
 
 def default_max_tokens(model: str) -> int:
@@ -31,7 +31,6 @@ def default_max_tokens(model: str) -> int:
     :param model: The model name
     :return: The default number of max tokens
     """
-    base = 1200
     if model in GPT_4_VISION_MODELS:
         return 4096
     elif model in GPT_4O_MODELS:

@@ -1080,6 +1080,35 @@ class ChatGPTTelegramBot:
                                           text=f"{query}\n\n_{answer_tr}:_\n{localized_answer} {str(e)}",
                                           is_inline=True)
 
+    async def is_subscribed(self, update, context, user_id):
+        try:
+            paid_channel_id = self.config.get('paid_channel_id', "")
+            if paid_channel_id == "":
+                return True
+
+            chat_member = await context.bot.get_chat_member(paid_channel_id, user_id)
+
+            if chat_member['status'] in ['member', 'owner', 'administrator', 'creator']:  # not in ['left', 'kicked']
+                return True
+            else:
+                return False
+        except Exception as e:
+            print('Bad Request: user or group not found.')
+            return False
+
+    async def check_subscription(self, update, context, user_id):
+        if not await self.is_subscribed(update, context, user_id):
+            paid_channel_url = self.config.get('paid_channel_url', "")
+            if paid_channel_url != "":
+                await context.bot.send_message(
+                    chat_id=user_id,
+                    text=f"Subscribe to channel to use a bot:\n[ai.zor.gg]({paid_channel_url})",
+                    parse_mode="Markdown"
+                )
+            return False
+        else:
+            return True
+
     async def check_allowed_and_within_budget(self, update: Update, context: ContextTypes.DEFAULT_TYPE,
                                               is_inline=False) -> bool:
         """
@@ -1092,10 +1121,18 @@ class ChatGPTTelegramBot:
         name = update.inline_query.from_user.name if is_inline else update.message.from_user.name
         user_id = update.inline_query.from_user.id if is_inline else update.message.from_user.id
 
-        if not await is_allowed(self.config, update, context, is_inline=is_inline):
+        is_admin_friends = await is_allowed(self.config, update, context, is_inline=is_inline)
+
+        if not await self.check_subscription(update, context, user_id):
+            if is_admin_friends:
+                return True
+            return False
+
+        if not is_admin_friends:
             logging.warning(f'User {name} (id: {user_id}) is not allowed to use the bot')
             await self.send_disallowed_message(update, context, is_inline)
             return False
+
         if not is_within_budget(self.config, self.usage, update, is_inline=is_inline):
             logging.warning(f'User {name} (id: {user_id}) reached their usage limit')
             await self.send_budget_reached_message(update, context, is_inline)

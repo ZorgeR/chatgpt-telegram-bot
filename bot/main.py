@@ -104,6 +104,8 @@ def main():
         'tts_prices': [float(i) for i in os.environ.get('TTS_PRICES', "0.015,0.030").split(",")],
         'transcription_price': float(os.environ.get('TRANSCRIPTION_PRICE', 0.006)),
         'bot_language': os.environ.get('BOT_LANGUAGE', 'en'),
+        'paid_channel_id': os.environ.get('PAID_CHANNEL_ID', '*'),
+        'paid_channel_url': os.environ.get('PAID_CHANNEL_URL', '*'),
     }
 
     plugin_config = {

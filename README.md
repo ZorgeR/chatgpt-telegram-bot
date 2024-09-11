@@ -21,7 +21,7 @@ A [Telegram bot](https://core.telegram.org/bots/api) that integrates with OpenAI
 ## Features
 - [x] (NEW!) Support change model (gpt-4o / gpt-4o-mini) on the fly in telegram
 - [x] (NEW!) DALL-E image orientation selection via chat /image (square) /image_album / image_portrait
-- [x] (NEW!) Allow access to bot via Channel / Paid Channel / Group / Private Group (https://github.com/ZorgeR/chatgpt-telegram-bot/releases/tag/r201) 
+- [x] (NEW!) Allow access to bot via Channel / Paid Channel (via stars subscription or added by admin) / Group / Private Group (https://github.com/ZorgeR/chatgpt-telegram-bot/releases/tag/r201) 
 - [x] (NEW!) Allow to choose model in chat, interactive via menu
 - [x] Support markdown in answers
 - [x] Reset conversation with the `/reset` command

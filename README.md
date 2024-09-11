@@ -19,7 +19,10 @@ A [Telegram bot](https://core.telegram.org/bots/api) that integrates with OpenAI
 ![plugins](https://github.com/n3d1117/chatgpt-telegram-bot/assets/11541888/83d5e0cd-e09a-463d-a292-722f919e929f)
 
 ## Features
-- [x] (NEW!) Support change model (gpt-3.5-turbo / gpt-4 / gpt-4-turbo) on the fly in telegram
+- [x] (NEW!) Support change model (gpt-4o / gpt-4o-mini) on the fly in telegram
+- [x] (NEW!) DALL-E image orientation selection via chat /image (square) /image_album / image_portrait
+- [x] (NEW!) Allow access to bot via Channel / Paid Channel / Group / Private Group (https://github.com/ZorgeR/chatgpt-telegram-bot/releases/tag/r201) 
+- [x] (NEW!) Allow to choose model in chat, interactive via menu
 - [x] Support markdown in answers
 - [x] Reset conversation with the `/reset` command
 - [x] Typing indicator while generating a response
@@ -128,6 +131,10 @@ Check out the [Budget Manual](https://github.com/n3d1117/chatgpt-telegram-bot/di
 | `WHISPER_PROMPT`                    | To improve the accuracy of Whisper's transcription service, especially for specific names or terms, you can set up a custom message.  [Speech to text - Prompting](https://platform.openai.com/docs/guides/speech-to-text/prompting)                                                    | `-`                                |
 | `TTS_VOICE`                         | The Text to Speech voice to use. Allowed values: `alloy`, `echo`, `fable`, `onyx`, `nova`, or `shimmer`                                                                                                                                                                                 | `alloy`                            |
 | `TTS_MODEL`                         | The Text to Speech model to use. Allowed values: `tts-1` or `tts-1-hd`                                                                                                                                                                                                                  | `tts-1`                            |
+| `PAID_CHANNEL_ID`                   | ID to subscribe, channel, chat, or private channel. Bot must be an admin                                                                                                                                                                                                                | ``                                 |
+| `PAID_CHANNEL_URL`                  | Url to join a channel or group, may be a paid link to a private channel                                                                                                                                                                                                                 | ``                                 |
+| `PAID_CHANNEL_NAME`                 | Name of a channel, in a join message                                                                                                                                                                                                                                                    | ``                                 |
+| `PAID_CHANNEL_STRING `              | Override MD string that send to an user if he is not an paid user                                                                                                                                                                                                                       | ``                                 |
 
 Check out the [official API reference](https://platform.openai.com/docs/api-reference/chat) for more details.
 

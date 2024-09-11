@@ -133,10 +133,9 @@ class ChatGPTTelegramBot:
         """
         Returns token usage statistics for current day and month.
         """
-        if not await is_allowed(self.config, update, context):
+        if not await self.check_allowed_and_within_budget(update, context):
             logging.warning(f'User {update.message.from_user.name} (id: {update.message.from_user.id}) '
                             'is not allowed to request their usage statistics')
-            await self.send_disallowed_message(update, context)
             return
 
         logging.info(f'User {update.message.from_user.name} (id: {update.message.from_user.id}) '
@@ -239,10 +238,9 @@ class ChatGPTTelegramBot:
         """
         Resend the last request
         """
-        if not await is_allowed(self.config, update, context):
+        if not await self.check_allowed_and_within_budget(update, context):
             logging.warning(f'User {update.message.from_user.name}  (id: {update.message.from_user.id})'
                             ' is not allowed to resend the message')
-            await self.send_disallowed_message(update, context)
             return
 
         chat_id = update.effective_chat.id
@@ -267,10 +265,9 @@ class ChatGPTTelegramBot:
         """
         Resets the conversation.
         """
-        if not await is_allowed(self.config, update, context):
+        if not await self.check_allowed_and_within_budget(update, context):
             logging.warning(f'User {update.message.from_user.name} (id: {update.message.from_user.id}) '
                             'is not allowed to reset the conversation')
-            await self.send_disallowed_message(update, context)
             return
 
         logging.info(f'Resetting the conversation for user {update.message.from_user.name} '

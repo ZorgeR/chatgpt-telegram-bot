@@ -263,4 +263,4 @@ You can make a donation / subscription, or say thanks in Telegram: https://t.me/
 
 #### TON (TONCOIN):
 ![img.png](static/img.png)
-`EQA9WB-PZIpA076uMsw11Xcrnvo_nZJ0Eg-KQUYr_zMek3gh`
+`UQDg07heLBcWdYO_sP6_Hc9hCu24E3v05sBJuRqc_DyWKreq`

@@ -1097,25 +1097,7 @@ class ChatGPTTelegramBot:
             return False
 
     async def check_subscription(self, update, context, user_id, is_admin_friends):
-        if is_admin_friends:
-            return True
         if not await self.is_subscribed(update, context, user_id):
-
-            paid_channel_url = self.config.get('paid_channel_url', "")
-            paid_channel_name = self.config.get('paid_channel_name', "Channel for paid users")
-            paid_channel_string = self.config.get('paid_channel_string', "")
-
-            if paid_channel_string != "":
-                subs_string = paid_channel_string
-            else:
-                subs_string = f"Subscribe to use a bot:\n - [{paid_channel_name}]({paid_channel_url})"
-
-            if paid_channel_url != "":
-                await context.bot.send_message(
-                    chat_id=user_id,
-                    text=subs_string,
-                    parse_mode="Markdown"
-                )
             return False
         else:
             return True
@@ -1133,14 +1115,28 @@ class ChatGPTTelegramBot:
         user_id = update.inline_query.from_user.id if is_inline else update.message.from_user.id
 
         is_admin_friends = await is_allowed(self.config, update, context, is_inline=is_inline)
+        is_subscriber = await self.check_subscription(update, context, user_id, is_admin_friends)
 
-        if not await self.check_subscription(update, context, user_id, is_admin_friends):
-            return False
+        if not is_subscriber:
+            if not is_admin_friends:
+                paid_channel_url = self.config.get('paid_channel_url', "")
+                paid_channel_name = self.config.get('paid_channel_name', "Channel for paid users")
+                paid_channel_string = self.config.get('paid_channel_string', "")
+
+                if paid_channel_string != "":
+                    subs_string = paid_channel_string
+                else:
+                    subs_string = f"Subscribe to use a bot:\n - [{paid_channel_name}]({paid_channel_url})"
+
+                if paid_channel_url != "":
+                    await context.bot.send_message(chat_id=user_id,text=subs_string,parse_mode="Markdown")
+                return False
 
         if not is_admin_friends:
-            logging.warning(f'User {name} (id: {user_id}) is not allowed to use the bot')
-            await self.send_disallowed_message(update, context, is_inline)
-            return False
+            if not is_subscriber:
+                logging.warning(f'User {name} (id: {user_id}) is not allowed to use the bot')
+                await self.send_disallowed_message(update, context, is_inline)
+                return False
 
         if not is_within_budget(self.config, self.usage, update, is_inline=is_inline):
             logging.warning(f'User {name} (id: {user_id}) reached their usage limit')

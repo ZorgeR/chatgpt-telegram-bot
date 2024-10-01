@@ -21,7 +21,7 @@ from utils import is_direct_result, encode_image, decode_image
 from plugin_manager import PluginManager
 
 # Models can be found here: https://platform.openai.com/docs/models/overview
-GPT_4_VISION_MODELS = ("gpt-4-vision-preview",)
+GPT_4_VISION_MODELS = ("gpt-4o", "gpt-4o-mini",)
 GPT_4O_MODELS = ("gpt-4o", "gpt-4o-mini",)
 GPT_ALL_MODELS = GPT_4_VISION_MODELS + GPT_4O_MODELS
 
@@ -54,8 +54,6 @@ def are_functions_available(model: str) -> bool:
     """
     if model in ("gpt-4o-mini", "gpt-4o"):
         return True
-    if model == 'gpt-4-vision-preview':
-        return False
     return True
 
 
@@ -420,7 +418,9 @@ class OpenAIHelper:
 
             # Summarize the chat history if it's too long to avoid excessive token usage
             token_count = self.__count_tokens(self.conversations[chat_id])
-            exceeded_max_tokens = token_count + self.config['max_tokens'] > max_model_tokens("gpt-4-vision-preview")
+
+            vision_model = self.config['vision_model']
+            exceeded_max_tokens = token_count + self.config['max_tokens'] > max_model_tokens(vision_model)
             exceeded_max_history_size = len(self.conversations[chat_id]) > self.config['max_history_size']
 
             if exceeded_max_tokens or exceeded_max_history_size:

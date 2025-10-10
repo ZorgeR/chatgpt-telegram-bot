@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest  # runner name : (ubuntu latest version) 
     steps:
     - uses: actions/checkout@v2 # first action : checkout source code
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
     - name: docker login
       run: | # log into docker hub account
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD  
@@ -23,10 +27,8 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
+        platforms: linux/amd64,linux/arm64
         push: true
         tags: |
           ${{secrets.DOCKER_USER}}/${{secrets.REPO_NAME}}:${{ github.sha }}
-    - name: Add latest tag and push
-      run: |
-        docker push ${{secrets.DOCKER_USER}}/${{secrets.REPO_NAME}}:${{ github.sha }}
         
